@@ -50,7 +50,7 @@ public interface ChannelDAO {
      * @param id
      * @return
      */
-    public abstract Channel getChannel(int id);
+    public abstract Channel getChannel(int id) throws IndexOutOfBoundsException;
 
     /**
      * Get a Channel by its URL.
@@ -58,7 +58,7 @@ public interface ChannelDAO {
      * @param id
      * @return
      */
-    public abstract Channel getChannel(URL location);
+    public abstract Channel getChannel(URL location) throws IndexOutOfBoundsException;
 
     /**
      * Get all Channels order by title.
@@ -66,4 +66,10 @@ public interface ChannelDAO {
      * @return
      */
     public abstract List getChannels();
+    
+    /**
+     * Free Object from Hibernate Session cache.
+     * @param o
+     */
+    public void freeObject (Object o);
 }

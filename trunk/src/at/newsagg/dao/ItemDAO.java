@@ -5,6 +5,10 @@
  */
 package at.newsagg.dao;
 
+import net.sf.hibernate.Hibernate;
+import at.newsagg.model.parser.hibernate.Channel;
+import at.newsagg.model.parser.hibernate.Item;
+
 /**
  * @author king
  * @version
@@ -21,6 +25,20 @@ public interface ItemDAO {
      * @return
      */
     public int countItemwithURL(String url);
+    
+    /**
+     * Get Item by id.
+     * @param id
+     * @return
+     */
+    public Item getItem(int id);
+    
+    /**
+     * Get Item by Link.
+     * @param id
+     * @return
+     */
+    public Item getItemByLink(String link);
     /**
      * Returns the Id of an Item with the given url.
      *  
