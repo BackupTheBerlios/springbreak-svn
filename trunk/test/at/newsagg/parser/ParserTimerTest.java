@@ -5,7 +5,12 @@
  */
 package at.newsagg.parser;
 
-import java.util.Date;
+import junit.framework.TestCase;
+
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+import org.springframework.context.ApplicationContext;
+import org.springframework.context.support.ClassPathXmlApplicationContext;
 
 /**
  * ONLY RUN THIS TEST IF YOU REALLY NEED IT.
@@ -18,7 +23,19 @@ import java.util.Date;
  * created on 26.03.2005 15:45:33
  *
  */
-public class ParserTimerTest extends Base {
+public class ParserTimerTest extends TestCase{
+    
+    protected static Log log = LogFactory.getLog(ParserTimerTest.class);
+
+    protected ApplicationContext ctx = null;
+    
+    public ParserTimerTest ()
+    {
+        
+            String[] paths = { "/WEB-INF/applicationContext.xml", "/WEB-INF/applicationContext-timers.xml" };
+            ctx = new ClassPathXmlApplicationContext(paths);
+            
+    }
     
     public void testRun ()
     {
