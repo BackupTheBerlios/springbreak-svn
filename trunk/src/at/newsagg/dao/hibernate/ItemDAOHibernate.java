@@ -9,10 +9,10 @@ import net.sf.hibernate.Hibernate;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.springframework.dao.DataAccessException;
 import org.springframework.orm.hibernate.support.HibernateDaoSupport;
 
 import at.newsagg.dao.ItemDAO;
+import at.newsagg.model.parser.hibernate.Item;
 
 /**
  * Hibernate DAO for Item.
@@ -38,6 +38,30 @@ public class ItemDAOHibernate extends HibernateDaoSupport implements ItemDAO{
         log.debug(url);
         return ((Integer)getHibernateTemplate().find("select count (*) from Item i where i.link like ?",url,Hibernate.STRING).get(0)).intValue();  
     }
+    /**
+     * Get Item by id.
+     * @param id
+     * @return
+     */
+    public Item getItem(int id) {
+        return (Item) getHibernateTemplate().load(Item.class,
+                new Integer(id));
+    }
+    
+    /**
+     * Get Item by Link.
+     * 
+     * Returns null when not found.
+     * 
+     * @param id
+     * @return
+     */
+    public Item getItemByLink(String link) throws IndexOutOfBoundsException
+    {
+        return (Item)getHibernateTemplate().find("from Item u where u.link like ?",link,Hibernate.STRING).get(0);    
+        
+    }
+    
     /**
      * Returns the Id of an Item with the given url.
      * 

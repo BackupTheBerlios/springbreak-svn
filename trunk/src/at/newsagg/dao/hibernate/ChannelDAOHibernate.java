@@ -41,8 +41,8 @@ public class ChannelDAOHibernate extends HibernateDaoSupport implements ChannelD
     
     public void saveOrUpdateChannel(Channel channel)
     {
-        getHibernateTemplate().saveOrUpdate(channel);
-
+        getHibernateTemplate().saveOrUpdateCopy(channel);
+            
         if (log.isDebugEnabled()) {
             log.debug("Channel " + channel.getLocation() + " stored!");
         } 
@@ -88,10 +88,13 @@ public class ChannelDAOHibernate extends HibernateDaoSupport implements ChannelD
     /**
      * Get a Channel by its URL.
      * 
+     * 
+     * 
      * @param id
      * @return
+     * @throws IndexOutOfBoundsException if no Channel was found
      */
-    public Channel getChannel(URL location) {
+    public Channel getChannel(URL location) throws IndexOutOfBoundsException{
         
         return (Channel)getHibernateTemplate().find("from Channel u where u.locationString like ?",location.toString(),Hibernate.STRING).get(0);
         
@@ -108,4 +111,12 @@ public class ChannelDAOHibernate extends HibernateDaoSupport implements ChannelD
         return getHibernateTemplate().find("from Channel order by title");
     }
 
+    /**
+     * Free Object from Hibernate Session cache.
+     * @param o
+     */
+    public void freeObject (Object o)
+    {
+        getHibernateTemplate().evict(o);
+    }
 }
