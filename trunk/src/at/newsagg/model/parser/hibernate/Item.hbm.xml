@@ -1,0 +1,119 @@
+<?xml version="1.0"?>
+
+<!DOCTYPE hibernate-mapping PUBLIC
+    "-//Hibernate/Hibernate Mapping DTD 2.0//EN" 
+    "http://hibernate.sourceforge.net/hibernate-mapping-2.0.dtd">
+
+<hibernate-mapping>
+    <class
+        name="at.newsagg.model.parser.hibernate.Item"
+        table="ITEMS"
+        dynamic-update="false"
+        dynamic-insert="false"
+    >
+
+        <id
+            name="id"
+            column="ITEM_ID"
+            type="long"
+            unsaved-value="-1"
+        >
+            <generator class="native">
+            </generator>
+        </id>
+
+        <many-to-one
+            name="channel"
+            class="at.newsagg.model.parser.hibernate.Channel"
+            cascade="none"
+            outer-join="auto"
+            update="true"
+            insert="true"
+            column="CHANNEL_ID"
+            not-null="true"
+        />
+
+        <property
+            name="title"
+            type="string"
+            update="true"
+            insert="true"
+            column="TITLE"
+            not-null="true"
+        />
+
+        <property
+            name="description"
+            type="string"
+            update="true"
+            insert="true"
+            column="DESCRIPTION"
+        />
+
+        <property
+            name="link"
+            type="string"
+            update="true"
+            insert="true"
+            column="LINK"
+        />
+
+        <property
+            name="creator"
+            type="string"
+            update="true"
+            insert="true"
+            column="CREATOR"
+        />
+
+        <property
+            name="subject"
+            type="string"
+            update="true"
+            insert="true"
+            column="SUBJECT"
+        />
+
+        <property
+            name="date"
+            type="java.util.Date"
+            update="true"
+            insert="true"
+            column="DATE"
+        />
+
+        <property
+            name="found"
+            type="java.util.Date"
+            update="true"
+            insert="true"
+            column="FOUND"
+        />
+
+        <many-to-one
+            name="guid"
+            class="at.newsagg.model.parser.hibernate.ItemGuid"
+            cascade="none"
+            outer-join="auto"
+            update="true"
+            insert="true"
+            column="GUID"
+        />
+ 
+        <property
+            name="comments"
+            type="java.net.URL"
+            update="true"
+            insert="true"
+            column="COMMENTS"
+        />
+
+       <!--
+            To add non XDoclet property mappings, create a file named
+                hibernate-properties-Item.xml
+            containing the additional properties and place it in your merge dir.
+        -->
+
+    </class>
+
+</hibernate-mapping>

@@ -1,0 +1,214 @@
+<?xml version="1.0"?>
+
+<!DOCTYPE hibernate-mapping PUBLIC
+    "-//Hibernate/Hibernate Mapping DTD 2.0//EN" 
+    "http://hibernate.sourceforge.net/hibernate-mapping-2.0.dtd">
+
+<hibernate-mapping>
+    <class
+        name="at.newsagg.model.parser.hibernate.Channel"
+        table="CHANNELS"
+        dynamic-update="false"
+        dynamic-insert="false"
+    >
+
+        <id
+            name="intId"
+            column="CHANNEL_ID"
+            type="integer"
+            unsaved-value="-1"
+        >
+            <generator class="native">
+            </generator>
+        </id>
+
+        <property
+            name="title"
+            type="string"
+            update="true"
+            insert="true"
+            column="TITLE"
+            not-null="true"
+        />
+
+        <property
+            name="description"
+            type="string"
+            update="true"
+            insert="true"
+            column="DESCRIPTION"
+        />
+
+        <property
+            name="locationString"
+            type="string"
+            update="true"
+            insert="true"
+            column="LOCSTRING"
+        />
+
+        <property
+            name="site"
+            type="java.net.URL"
+            update="true"
+            insert="true"
+            column="SITE"
+        />
+
+        <property
+            name="creator"
+            type="string"
+            update="true"
+            insert="true"
+            column="CREATOR"
+        />
+
+        <property
+            name="publisher"
+            type="string"
+            update="true"
+            insert="true"
+            column="PUBLISHER"
+        />
+
+        <property
+            name="language"
+            type="java.lang.String"
+            update="true"
+            insert="true"
+            column="LANGUAGE"
+        />
+
+        <property
+            name="formatString"
+            type="string"
+            update="true"
+            insert="true"
+            column="FORMAT"
+        />
+
+        <bag
+            name="items"
+            table="ITEMS"
+            lazy="false"
+            inverse="true"
+            cascade="all"
+        >
+
+              <key
+                  column="CHANNEL_ID"
+              />
+
+              <one-to-many
+                  class="at.newsagg.model.parser.hibernate.Item"
+              />
+        </bag>
+
+        <many-to-one
+            name="image"
+            class="at.newsagg.model.parser.hibernate.Image"
+            cascade="none"
+            outer-join="auto"
+            update="true"
+            insert="true"
+            column="IMAGE_ID"
+            not-null="false"
+        />
+
+        <property
+            name="copyright"
+            type="java.lang.String"
+            update="true"
+            insert="true"
+            column="COPYRIGHT"
+        />
+
+        <property
+            name="rating"
+            type="java.lang.String"
+            update="true"
+            insert="true"
+            column="RATING"
+        />
+
+        <property
+            name="generator"
+            type="java.lang.String"
+            update="true"
+            insert="true"
+            column="GENERATOR"
+        />
+
+        <property
+            name="docs"
+            type="java.lang.String"
+            update="true"
+            insert="true"
+            column="DOCS"
+        />
+
+        <property
+            name="ttl"
+            type="int"
+            update="true"
+            insert="true"
+            column="TTL"
+        />
+
+        <property
+            name="lastUpdated"
+            type="java.util.Date"
+            update="true"
+            insert="true"
+            column="LAST_UPDATED"
+        />
+
+        <property
+            name="lastBuildDate"
+            type="java.util.Date"
+            update="true"
+            insert="true"
+            column="LAST_BUILD_DATE"
+        />
+
+        <property
+            name="pubDate"
+            type="java.util.Date"
+            update="true"
+            insert="true"
+            column="PUB_DATE"
+        />
+
+        <property
+            name="updatePeriod"
+            type="java.lang.String"
+            update="true"
+            insert="true"
+            column="UPDATE_PERIOD"
+        />
+
+        <property
+            name="updateFrequency"
+            type="int"
+            update="true"
+            insert="true"
+            column="UPDATE_FREQUENCY"
+        />
+
+        <property
+            name="updateBase"
+            type="java.util.Date"
+            update="true"
+            insert="true"
+            column="UPDATE_BASE"
+        />
+
+        <!--
+            To add non XDoclet property mappings, create a file named
+                hibernate-properties-Channel.xml
+            containing the additional properties and place it in your merge dir.
+        -->
+
+    </class>
+
+</hibernate-mapping>
