@@ -1,6 +1,8 @@
 package at.newsagg.dao;
 
 import org.apache.commons.logging.LogFactory;
+import org.springframework.orm.ObjectRetrievalFailureException;
+
 import at.newsagg.model.User;
 
 
@@ -43,6 +45,12 @@ public class UserDAOTest extends Base {
 		} 
 		
 		dao.removeUser(user.getUsername ()); 
-		assertNull(dao.getUser(user.getUsername())); 
+		try {
+            dao.getUser(user.getUsername());
+            fail();
+        } catch (ObjectRetrievalFailureException e) {
+           
+            log.info("User shouldn't be found in DB!");
+        } 
 	}
 }
