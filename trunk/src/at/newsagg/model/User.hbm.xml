@@ -62,6 +62,24 @@
             column="email"
         />
 
+        <bag
+            name="categories"
+            table="CATEGORIES"
+            lazy="true"
+            inverse="true"
+            cascade="all"
+            order-by="title ASC"
+        >
+
+              <key
+                  column="USER_ID"
+              />
+
+              <one-to-many
+                  class="at.newsagg.model.Category"
+              />
+        </bag>
+
         <!--
             To add non XDoclet property mappings, create a file named
                 hibernate-properties-User.xml

@@ -33,7 +33,7 @@
         <many-to-one
             name="category"
             class="at.newsagg.model.Category"
-            cascade="save-update"
+            cascade="none"
             outer-join="auto"
             update="true"
             insert="true"

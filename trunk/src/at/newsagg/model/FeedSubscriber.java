@@ -77,11 +77,12 @@ public class FeedSubscriber extends BaseObject implements FeedSubscriberIF{
      * @hibernate.many-to-one
      *   name="category"
      *   column="CATEGORY_ID"
+     *   cascade="none"
      *   class="at.newsagg.model.Category"
      *   not-null="true"/>
      * @return Returns the category.
      */
-    public Category getCategory() {
+    public CategoryIF getCategory() {
         return category;
     }
     /**
@@ -94,6 +95,7 @@ public class FeedSubscriber extends BaseObject implements FeedSubscriberIF{
      * @hibernate.many-to-one
      *   name="channel"
      *   column="CHANNEL_ID"
+     *   cascade="none"
      *   class="at.newsagg.model.parser.hibernate.Channel"
      *   not-null="true"/>
      * @return Returns the channel.
@@ -111,6 +113,7 @@ public class FeedSubscriber extends BaseObject implements FeedSubscriberIF{
      * @hibernate.many-to-one
      *   name="user"
      *   column="username"
+     *   cascade="none"
      *   class="at.newsagg.model.User"
      *   not-null="true"/>
      *

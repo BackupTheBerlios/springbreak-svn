@@ -40,6 +40,17 @@
             not-null="true"
         />
 
+        <many-to-one
+            name="user"
+            class="at.newsagg.model.User"
+            cascade="none"
+            outer-join="auto"
+            update="true"
+            insert="true"
+            column="USER_ID"
+            not-null="true"
+        />
+
         <!--
             To add non XDoclet property mappings, create a file named
                 hibernate-properties-Category.xml

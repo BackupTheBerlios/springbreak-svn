@@ -5,6 +5,11 @@
  */
 package at.newsagg.model;
 
+import org.apache.commons.lang.builder.EqualsBuilder;
+import org.apache.commons.lang.builder.HashCodeBuilder;
+
+import at.newsagg.model.parser.hibernate.Channel;
+
 /**
  * Category model.
  
@@ -17,12 +22,12 @@ package at.newsagg.model;
  *
  * TODO: über equals, hashcode nachdenken
  */
-public class Category extends BaseObject{
+public class Category extends BaseObject implements CategoryIF{
     
     private int id = -1;
     private String title;
     private String htmlColor;
-    private int userID;
+    private User User;
     
     
    public Category ()
@@ -82,13 +87,35 @@ public class Category extends BaseObject{
     
     
     
-    public int getUserID() {
-        return userID;
+    
+    /**
+     * @hibernate.many-to-one
+     *  column="USER_ID"
+     *  class="at.newsagg.model.User"
+     *  not-null="true"
+     *
+     * @return parent user.
+     */
+    public User getUser() {
+        return User;
     }
     /**
-     * @param userID The userID to set.
+     * @param user The user to set.
      */
-    public void setUserID(int userID) {
-        this.userID = userID;
+    public void setUser(User user) {
+        User = user;
     }
+   /**
+    * TODO: die ist scheiße!
+    */ 
+    public boolean equals(Object other) {
+        if (this==other) return true;
+        if ( !(other instanceof CategoryIF) ) return false;
+        final CategoryIF that = (CategoryIF) other;
+        return (this.getTitle().toLowerCase().equals(that.getTitle().toLowerCase()));
+        
+    }
+
+    public int hashCode() {
+        return this.getTitle().hashCode();}
 }

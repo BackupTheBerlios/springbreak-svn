@@ -53,7 +53,7 @@ public interface FeedSubscriberIF {
      *   not-null="true"/>
      * @return Returns the category.
      */
-    public Category getCategory();
+    public CategoryIF getCategory();
 
     /**
      * @param category The category to set.

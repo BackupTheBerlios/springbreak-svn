@@ -1,5 +1,9 @@
 package at.newsagg.model;
 
+import java.util.Collection;
+
+import at.newsagg.model.parser.hibernate.Channel;
+
 
 /**
  * 
@@ -19,6 +23,8 @@ public class User extends BaseObject {
 	private String password;
 	private String email;
 	private boolean isAdmin;
+	private Collection categories;
+	
 	
 	/**
 	 * @hibernate.property
@@ -125,4 +131,42 @@ public class User extends BaseObject {
     public void setAdmin(boolean isAdmin) {
         this.isAdmin = isAdmin;
     }
+    /**
+     * @hibernate.bag
+     *  table="CATEGORIES"
+     *  cascade="all"
+     *  inverse="true"
+     *  lazy="true"
+     *  order-by="title ASC"
+     * @hibernate.collection-key
+     *  column="USER_ID"
+     * @hibernate.collection-one-to-many
+     *  class="at.newsagg.model.Category"
+     *
+     * @return items of channel.
+     */
+    public Collection getCategories() {
+        return categories;
+    }
+    /**
+     * @param categories The categories to set.
+     */
+    public void setCategories(Collection categories) {
+        this.categories = categories;
+    }
+    
+    public boolean equals(Object other) {
+        if (this==other) return true;
+        if ( !(other instanceof User) ) return false;
+        final User that = (User) other;
+        return this.getUsername().equals( that.getUsername() );
+        }
+    
+    
+    
+    public int hashCode() {
+        return this.getUsername().hashCode();
+        
+        }
+    
 }
