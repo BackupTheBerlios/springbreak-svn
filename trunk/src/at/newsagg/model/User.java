@@ -1,7 +1,17 @@
 package at.newsagg.model;
 
 
-
+/**
+ * 
+ * @hibernate.class
+ * table="newsagguser"
+ * 
+ * 
+ * @author Roland Vecera xdoclet-hibernate
+ * @version
+ *
+ *
+ */
 public class User extends BaseObject { 
 	private String username; 
 	private String firstName; 
@@ -11,12 +21,14 @@ public class User extends BaseObject {
 	private boolean isAdmin;
 	
 	/**
+	 * @hibernate.property
 	 * @return Returns the firstName.
 	 */
 	public String getFirstName() {
 		return firstName;
 	}
 	/**
+	 * 
 	 * @param firstName The firstName to set.
 	 */
 	public void setFirstName(String firstName) {
@@ -24,6 +36,7 @@ public class User extends BaseObject {
 	}
 	
 	/**
+	 * @hibernate.property
 	 * @return Returns the lastName.
 	 */
 	public String getLastName() {
@@ -36,6 +49,7 @@ public class User extends BaseObject {
 		this.lastName = lastName;
 	}
 	/**
+	 * @hibernate.property
 	 * @return Returns the password.
 	 */
 	public String getPassword() {
@@ -48,7 +62,17 @@ public class User extends BaseObject {
 		this.password = password;
 	}
 	/**
-	 * @return Returns the username.
+	 * @hibernate.id
+	 * unsaved-value="0"
+	 * column="username"
+	 * generator-class="assigned"
+	 * 
+	 * 
+	 * 
+	 * @author king
+	 * @version
+	 * created on 28.03.2005 18:26:23
+	 *
 	 */
 	public String getUsername() {
 		return username;
@@ -61,6 +85,7 @@ public class User extends BaseObject {
 	}
 	
 	/**
+	 * 
 	 * @param admin
 	 */
 	public void setIsAdmin(boolean admin) {
@@ -68,6 +93,7 @@ public class User extends BaseObject {
 	}
 	
 	/**
+	 * @hibernate.property
 	 * @param admin
 	 */
 	public boolean getIsAdmin() {
@@ -77,6 +103,7 @@ public class User extends BaseObject {
 	
 	
 	/**
+	 * @hibernate.property
 	 * @return Returns the email.
 	 */
 	public String getEmail() {
@@ -88,4 +115,14 @@ public class User extends BaseObject {
 	public void setEmail(String email) {
 		this.email = email;
 	}
+	
+  
+
+   
+    /**
+     * @param isAdmin The isAdmin to set.
+     */
+    public void setAdmin(boolean isAdmin) {
+        this.isAdmin = isAdmin;
+    }
 }

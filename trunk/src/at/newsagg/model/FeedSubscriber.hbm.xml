@@ -1,0 +1,71 @@
+<?xml version="1.0"?>
+
+<!DOCTYPE hibernate-mapping PUBLIC
+    "-//Hibernate/Hibernate Mapping DTD 2.0//EN" 
+    "http://hibernate.sourceforge.net/hibernate-mapping-2.0.dtd">
+
+<hibernate-mapping>
+    <class
+        name="at.newsagg.model.FeedSubscriber"
+        table="FEEDSUBSCRIBERS"
+        dynamic-update="false"
+        dynamic-insert="false"
+    >
+
+        <id
+            name="id"
+            column="FEEDSUBSCRIBER_ID"
+            type="int"
+            unsaved-value="-1"
+        >
+            <generator class="native">
+            </generator>
+        </id>
+
+        <property
+            name="addedDate"
+            type="java.util.Date"
+            update="true"
+            insert="true"
+            column="ADDEDAT"
+        />
+
+        <many-to-one
+            name="category"
+            class="at.newsagg.model.Category"
+            cascade="save-update"
+            outer-join="auto"
+            update="true"
+            insert="true"
+            column="CATEGORY_ID"
+        />
+
+        <many-to-one
+            name="channel"
+            class="at.newsagg.model.parser.hibernate.Channel"
+            cascade="none"
+            outer-join="auto"
+            update="true"
+            insert="true"
+            column="CHANNEL_ID"
+        />
+
+        <many-to-one
+            name="user"
+            class="at.newsagg.model.User"
+            cascade="none"
+            outer-join="auto"
+            update="true"
+            insert="true"
+            column="username"
+        />
+
+        <!--
+            To add non XDoclet property mappings, create a file named
+                hibernate-properties-FeedSubscriber.xml
+            containing the additional properties and place it in your merge dir.
+        -->
+
+    </class>
+
+</hibernate-mapping>

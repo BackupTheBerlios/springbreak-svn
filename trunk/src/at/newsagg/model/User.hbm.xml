@@ -1,15 +1,73 @@
-<?xml version="1.0" encoding="UTF-8"?> 
-<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 2.0//EN" "http://hibernate.sourceforge.net/hibernate-mapping-2.0.dtd"> 
-<hibernate-mapping> 
-	<class name="at.newsagg.model.User" table="newsagguser"> 
-		<id name="username" column="username" unsaved-value="0"> 
-			<generator class="assigned"/>
-		</id>
-				
-		<property name="firstName" column="firstname" not-null="false"/> 
-		<property name="lastName" column="lastname" not-null="false"/> 
-		<property name="password" column="password" not-null="false"/> 
-		<property name="email" column="email" not-null="false"/> 
-		<property name="isAdmin" type="boolean" column="isAdmin" not-null="false"/> 
-	</class> 
+<?xml version="1.0"?>
+
+<!DOCTYPE hibernate-mapping PUBLIC
+    "-//Hibernate/Hibernate Mapping DTD 2.0//EN" 
+    "http://hibernate.sourceforge.net/hibernate-mapping-2.0.dtd">
+
+<hibernate-mapping>
+    <class
+        name="at.newsagg.model.User"
+        table="newsagguser"
+        dynamic-update="false"
+        dynamic-insert="false"
+    >
+
+        <id
+            name="username"
+            column="username"
+            type="java.lang.String"
+            unsaved-value="0"
+        >
+            <generator class="assigned">
+            </generator>
+        </id>
+
+        <property
+            name="firstName"
+            type="java.lang.String"
+            update="true"
+            insert="true"
+            column="firstName"
+        />
+
+        <property
+            name="lastName"
+            type="java.lang.String"
+            update="true"
+            insert="true"
+            column="lastName"
+        />
+
+        <property
+            name="password"
+            type="java.lang.String"
+            update="true"
+            insert="true"
+            column="password"
+        />
+
+        <property
+            name="isAdmin"
+            type="boolean"
+            update="true"
+            insert="true"
+            column="isAdmin"
+        />
+
+        <property
+            name="email"
+            type="java.lang.String"
+            update="true"
+            insert="true"
+            column="email"
+        />
+
+        <!--
+            To add non XDoclet property mappings, create a file named
+                hibernate-properties-User.xml
+            containing the additional properties and place it in your merge dir.
+        -->
+
+    </class>
+
 </hibernate-mapping>

@@ -1,0 +1,51 @@
+<?xml version="1.0"?>
+
+<!DOCTYPE hibernate-mapping PUBLIC
+    "-//Hibernate/Hibernate Mapping DTD 2.0//EN" 
+    "http://hibernate.sourceforge.net/hibernate-mapping-2.0.dtd">
+
+<hibernate-mapping>
+    <class
+        name="at.newsagg.model.Category"
+        table="CATEGORIES"
+        dynamic-update="false"
+        dynamic-insert="false"
+    >
+
+        <id
+            name="id"
+            column="CATEGORY_ID"
+            type="integer"
+            unsaved-value="-1"
+        >
+            <generator class="native">
+            </generator>
+        </id>
+
+        <property
+            name="htmlColor"
+            type="java.lang.String"
+            update="true"
+            insert="true"
+            column="HTMLCOLOR"
+            not-null="true"
+        />
+
+        <property
+            name="title"
+            type="java.lang.String"
+            update="true"
+            insert="true"
+            column="TITLE"
+            not-null="true"
+        />
+
+        <!--
+            To add non XDoclet property mappings, create a file named
+                hibernate-properties-Category.xml
+            containing the additional properties and place it in your merge dir.
+        -->
+
+    </class>
+
+</hibernate-mapping>
