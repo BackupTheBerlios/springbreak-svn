@@ -9,27 +9,41 @@
                 value="%p - %C{1}.%M(%L) | %m%n"/>
         </layout>
     </appender>
+ 
+   
+   <logger name="at.newsagg">
+        <level value="DEBUG"/>
+    </logger>
+
+
 
     <logger name="org.apache">
         <level value="WARN"/>
     </logger>
 
-    <!--
+    
     <logger name="net.sf.hibernate">
-        <level value="WARN"/>
+        <level value="INFO"/>
+    </logger>
+
+  <logger name="org.springframework.orm">
+        <level value="INFO"/>
     </logger>
 
     <logger name="org.springframework">
-        <level value="WARN"/>
+        <level value="INFO"/>
     </logger>
-    -->
+   
+ <logger name="at.newsagg">
+        <level value="INFO"/>
+    </logger> 
 
     <logger name="org.appfuse">
         <level value="DEBUG"/>
     </logger>
 
     <root>
-        <level value="INFO"/>
+        <level value="WARN"/>
         <appender-ref ref="CONSOLE"/>
     </root>
 
