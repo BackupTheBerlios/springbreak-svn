@@ -10,9 +10,9 @@
         <property name="password"><value></value></property>-->
         
         <property name="driverClassName"><value>org.postgresql.Driver</value></property>
-        <property name="url"><value>jdbc:postgresql://centrino/newsagg</value></property>
-        <property name="username"><value>admin</value></property>
-        <property name="password"><value>letmein</value></property>
+        <property name="url"><value>jdbc:postgresql://localhost/newsagg</value></property>
+        <property name="username"><value>pgadmin</value></property>
+        <property name="password"><value></value></property>
     </bean>
 
     <!-- Hibernate SessionFactory -->
@@ -21,6 +21,11 @@
         <property name="mappingResources">
             <list>
                 <value>at/newsagg/model/User.hbm.xml</value>
+				<value>at/newsagg/model/parser/hibernate/Channel.hbm.xml</value>
+				<value>at/newsagg/model/parser/hibernate/Image.hbm.xml</value>
+				<value>at/newsagg/model/parser/hibernate/Item.hbm.xml</value>
+				<value>at/newsagg/model/parser/hibernate/ItemGuid.hbm.xml</value>
+				<value>at/newsagg/model/parser/hibernate/ItemMetadata.hbm.xml</value>
             </list>
         </property>
         <property name="hibernateProperties">
@@ -43,6 +48,20 @@
     		<ref local="sessionFactory"/> 
     	</property> 
     </bean>
+    <!-- Feed DAOs
+         Roland Vecera 20.3.2005 -->
+    <bean id="channelDAO" class="at.newsagg.dao.hibernate.ChannelDAOHibernate"> 
+    	<property name="sessionFactory"> 
+    		<ref local="sessionFactory"/> 
+    	</property> 
+    </bean>
+    <bean id="itemDAO" class="at.newsagg.dao.hibernate.ItemDAOHibernate"> 
+    	<property name="sessionFactory"> 
+    		<ref local="sessionFactory"/> 
+    	</property> 
+    </bean>
+
+
     <!-- Add Managers here -->
      <bean id="userManagerTarget" class="at.newsagg.service.impl.UserManagerImpl"> 
     	<property name="userDAO"><ref local="userDAO"/></property> 
@@ -59,4 +78,62 @@
     			</props> 
     		</property>
     </bean>
+
+<!-- ParserCronjob Service
+ Roland Vecera 26.3.2005 -->
+	<bean id="parserCronJobService" class="at.newsagg.service.impl.ParserCronJobServiceImpl">
+		<property name="channelDao"><ref local="channelDAO"/></property>
+		<property name="itemDao"><ref local="itemDAO"/></property>
+		<property name="parser"><ref local="feedParser"/></property>
+		
+	</bean>
+
+<!-- Task Timer for parserCronJobService -->
+	<bean id="scheduledParserCronJob"
+		class="org.springframework.scheduling.timer.ScheduledTimerTask">
+		<property name="timerTask">
+			<ref bean="parserCronJobService"/>
+		</property>
+		<property name="period">
+			<!-- time in ms -->
+			<value>300000</value>
+		</property>
+	</bean>
+
+
+<!-- Master of all Timer Tasks; takes an array of Tasks to handle
+ Add your Timertask here!
+ Roland Vecera
+-->
+	<bean class="org.springframework.scheduling.timer.TimerFactoryBean">
+		<property name="scheduledTimerTasks">
+			<list>
+				<ref bean="scheduledParserCronJob"/>
+			</list>
+		</property>
+	</bean>
+
+
+
+<!-- Definitions for RSS Parsers 
+		Roland Vecera
+		20.3.2005
+-->
+
+ <bean id="feedParser" class="at.newsagg.parser.FeedParser"> 
+    		<property name="rss091"> <ref local="rss091Parser"/></property> 
+    		<property name="rss10"> <ref local="rss10Parser"/> </property> 
+			<property name="rss20"> <ref local="rss20Parser"/> </property> 
+			<property name="atom03"> <ref local="atom03Parser"/> </property> 
+    		
+  </bean>
+
+ <bean id="rss091Parser" class="at.newsagg.parser.RSS_0_91_Parser" /> 
+ <bean id="rss10Parser" class="at.newsagg.parser.RSS_1_0_Parser" />
+ <bean id="rss20Parser" class="at.newsagg.parser.RSS_2_0_Parser" />
+ <bean id="atom03Parser" class="at.newsagg.parser.Atom_0_3_Parser" />
+
+<!-- Ende RSS Parser Definitions -->
+
+
 </beans>
