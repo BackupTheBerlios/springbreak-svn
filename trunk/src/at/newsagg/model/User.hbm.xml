@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?> 
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 2.0//EN" "http://hibernate.sourceforge.net/hibernate-mapping-2.0.dtd"> 
+<hibernate-mapping> 
+	<class name="at.newsagg.model.User" table="newsagguser"> 
+		<id name="username" column="username" unsaved-value="0"> 
+			<generator class="assigned"/>
+		</id>
+				
+		<property name="firstName" column="firstname" not-null="false"/> 
+		<property name="lastName" column="lastname" not-null="false"/> 
+		<property name="password" column="password" not-null="false"/> 
+		<property name="email" column="email" not-null="false"/> 
+		<property name="isAdmin" type="boolean" column="isAdmin" not-null="false"/> 
+	</class> 
+</hibernate-mapping>

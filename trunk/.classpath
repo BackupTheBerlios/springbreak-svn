@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<classpath>
+	<classpathentry kind="src" path="src"/>
+	<classpathentry kind="src" path="test"/>
+	<classpathentry kind="src" path="web"/>
+	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
+	<classpathentry kind="var" path="JUNIT_HOME/junit.jar"/>
+	<classpathentry kind="lib" path="/opt/JavaStuff/spring-framework-1.1.4/dist/spring-aop.jar"/>
+	<classpathentry kind="lib" path="/opt/JavaStuff/spring-framework-1.1.4/dist/spring-beans.dtd"/>
+	<classpathentry kind="lib" path="/opt/JavaStuff/spring-framework-1.1.4/dist/spring-context.jar"/>
+	<classpathentry kind="lib" path="/opt/JavaStuff/spring-framework-1.1.4/dist/spring-core.jar"/>
+	<classpathentry kind="lib" path="/opt/JavaStuff/spring-framework-1.1.4/dist/spring-dao.jar"/>
+	<classpathentry kind="lib" path="/opt/JavaStuff/spring-framework-1.1.4/dist/spring-mock.jar"/>
+	<classpathentry kind="lib" path="/opt/JavaStuff/spring-framework-1.1.4/dist/spring-orm.jar"/>
+	<classpathentry kind="lib" path="/opt/JavaStuff/spring-framework-1.1.4/dist/spring-web.jar"/>
+	<classpathentry kind="lib" path="/opt/JavaStuff/spring-framework-1.1.4/dist/spring-webmvc.jar"/>
+	<classpathentry kind="lib" path="/opt/JavaStuff/spring-framework-1.1.4/dist/spring.ftl"/>
+	<classpathentry kind="lib" path="/opt/JavaStuff/spring-framework-1.1.4/dist/spring.jar"/>
+	<classpathentry kind="lib" path="/opt/JavaStuff/spring-framework-1.1.4/dist/spring.tld"/>
+	<classpathentry kind="lib" path="/opt/JavaStuff/spring-framework-1.1.4/dist/spring.vm"/>
+	<classpathentry kind="lib" path="lib"/>
+	<classpathentry kind="lib" path="/opt/j2ee/j2ee.jar"/>
+	<classpathentry kind="output" path="build/classes"/>
+</classpath>

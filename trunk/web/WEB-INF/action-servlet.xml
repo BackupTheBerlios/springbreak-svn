@@ -1,0 +1,151 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN//EN"
+    "http://www.springframework.org/dtd/spring-beans.dtd">
+
+<beans>
+	<!-- ========================= VIEW DEFINITIONS ========================= -->
+	
+	 <bean id="viewResolver" class="org.springframework.web.servlet.view.InternalResourceViewResolver"> 
+		<property name="viewClass"> 
+			<value>org.springframework.web.servlet.view.JstlView</value> 
+		</property> 
+		
+		<!--  If you need to move your JSPs to  /WEB-INF/pages,  all you ll need to change is the prefix. -->
+		<property name="prefix">
+			<value>/</value>
+		</property> 
+		
+		<property name="suffix">
+			<value>.jsp</value>
+		</property> 
+	</bean>
+		
+	<!-- which means look for messages.properties at the root of the classpath. S. 99 -->
+	<bean id="messageSource" class="org.springframework.context.support.ResourceBundleMessageSource"> 
+		<property name="basename">
+			<value>messages</value>
+		</property> 
+	</bean>
+	
+	<bean id="validatorFactory" class="org.springframework.validation.commons.DefaultValidatorFactory" init-method="init"> 
+		<property name="resources"> 
+			<list> 
+				<value>/WEB-INF/validator-rules.xml</value> 
+				<value>/WEB-INF/validation.xml</value> 
+			</list> 
+		</property> 
+	</bean> 
+	
+	<bean id="beanValidator" class="org.springframework.validation.commons.BeanValidator"> 
+		<property name="validatorFactory"> 
+			<ref local="validatorFactory"/> 
+		</property> 
+	</bean>
+	
+	<!-- ========================= DEFINITIONS OF PUBLIC CONTROLLERS ========================= -->
+	<bean id="defaultHandlerMapping" class="org.springframework.web.servlet.handler.BeanNameUrlHandlerMapping"/>
+	
+	<bean name="/login.html" class="at.newsagg.web.LoginFormController"> 
+		<property name="commandName">
+			<value>login</value>
+		</property> 
+		<property name="commandClass"> 
+			<value>at.newsagg.model.User</value> 
+		</property> 
+		<property name="formView">
+			<value>index</value>
+		</property> 
+		<property name="successView">
+			<value>main.html</value>
+		</property> 
+		<property name="userManager">
+			<ref bean="userManager"/>
+		</property> 		
+	</bean>
+	
+	<bean name="/index.html" class="at.newsagg.web.IndexViewController"/>
+	
+	<bean name="/register.html" class="at.newsagg.web.RegisterController"> 
+		<!--  optional - if you don't define it then the default name is command -->
+		<property name="commandName">
+			<value>user</value>
+		</property> 
+		<property name="commandClass"> 
+			<value>at.newsagg.web.commandObj.RegisterCommand</value> 
+		</property> 
+		<property name="formView">
+			<value>registerForm</value>
+		</property> 
+		<property name="successView">
+			<value>userHasBeenAdded</value>
+		</property> 
+		<property name="userManager">
+			<ref bean="userManager"/>
+		</property> 
+		<!-- property name="validator">
+			<ref bean="beanValidator"/>
+		</property-->
+	</bean>
+		
+	<!-- ========================= DEFINITIONS OF PROTECTED CONTROLLERS ========================= -->
+	<bean id="urlMapping" class="org.springframework.web.servlet.handler.SimpleUrlHandlerMapping"> 
+		<property name="interceptors">
+			<list>
+				<ref bean="loginInterceptor"/>
+			</list>
+		</property>
+		<property name="mappings"> 
+			<props> 
+				<prop key="/main.html">mainController</prop> 
+				<prop key="/showUser.html">userController</prop> 
+				<prop key="/showAddUser.html">userFormController</prop>
+		 	</props> 
+		</property> 
+	</bean>
+	
+	
+	<bean id="loginInterceptor" class="at.newsagg.web.LoginInterceptor"/>
+	
+	<bean id="mainController" class="at.newsagg.web.MainController"/>
+	
+	<bean id="showAddController" class="at.newsagg.web.ShowAddController"/>
+	
+	<bean id="userController" class="at.newsagg.web.UserController"> 
+		<property name="userManager"> 
+			<ref bean="userManager"/> 
+		</property> 
+	</bean> 
+	
+	<bean id="userFormController" class="at.newsagg.web.UserFormController"> 
+		<!--  optional - if you don't define it then the default name is command -->
+		<property name="commandName">
+			<value>user</value>
+		</property> 
+		<property name="commandClass"> 
+			<value>at.newsagg.web.commandObj.UserFormCommand</value> 
+		</property> 
+		<property name="formView">
+			<value>userForm</value>
+		</property> 
+		<property name="successView">
+			<value>showUser.html</value>
+		</property> 
+		<property name="userManager">
+			<ref bean="userManager"/>
+		</property> 
+		<!-- property name="validator">
+			<ref bean="beanValidator"/>
+		</property-->
+	</bean>
+	
+		<!-- ========================= EXCEPTION HANDLING ========================= -->
+	<bean id="exceptionResolver" class="org.springframework.web.servlet.handler.SimpleMappingExceptionResolver"> 
+			<property name="exceptionMappings"> 
+				<props> 
+					<prop key="org.springframework.dao.DataAccessException">dataAccessFailure</prop> 
+					<prop key="org.springframework.orm.ObjectRetrievalFailureException">dataAccessFailure</prop> 
+				</props> 
+			</property> 
+	</bean>
+	
+</beans>

@@ -1,0 +1,293 @@
+<?xml version="1.0"?>
+<project name="newsagg" basedir="." default="help">
+    <property file="build.properties"/>
+
+    <property name="src.dir" value="src"/>
+    <property name="web.dir" value="web"/>
+    <property name="test.src" value="test"/>
+    <property name="dist.dir" value="dist"/>
+    <property name="build.dir" value="build"/>
+    <property name="test.dir" value="build/test"/>
+    <property name="webapp.name" value="equinox"/>
+
+    <property environment="env"/>
+    <property name="tomcat.home" value="${tomcat.catalinahome}"/>
+
+    <path id="classpath">
+        <fileset dir="${web.dir}/WEB-INF/lib">
+            <include name="*.jar"/>
+        </fileset>
+        <fileset dir="${tomcat.home}/common/lib">
+            <include name="servlet*.jar"/>
+        </fileset>
+        <pathelement path="${build.dir}"/>
+    </path>
+	
+	<target name="deployReload" depends="deploy, reload"/>
+	
+    <target name="help">
+        <echo message=""/>
+        <echo message="${webapp.name} build file"/>
+        <echo message="-----------------------------------"/>
+        <echo message=""/>
+        <echo message="Available targets are:"/>
+        <echo message=""/>
+        <echo message="compile   --> Compile all Java files"/>
+        <echo message="test      --> Runs JUnit tests"/>
+        <echo message="war       --> Package as WAR file"/>
+        <echo message="deploy    --> Deploy application as directory"/>
+        <echo message="deploywar --> Deploy application as a WAR file"/>
+        <echo message=""/>
+        <echo message="install   --> Install application in Tomcat"/>
+        <echo message="remove    --> Remove application from Tomcat"/>
+        <echo message="reload    --> Reload application in Tomcat"/>
+        <echo message="start     --> Start Tomcat application"/>
+        <echo message="stop      --> Stop Tomcat application"/>
+        <echo message="list      --> List Tomcat applications"/>
+        <echo message=""/>
+        <echo message="clean     --> Deletes compiled classes and WAR"/>
+        <echo message="new       --> Creates a new project"/>
+    </target>
+
+    <target name="compile" description="Compile main source tree java files">
+        <mkdir dir="${build.dir}/classes"/>
+        <javac destdir="${build.dir}/classes" target="1.4" debug="true"
+            deprecation="false" optimize="false" failonerror="true">
+            <src path="${src.dir}"/>
+            <classpath refid="classpath"/>
+        </javac>
+        <!-- compile tests -->
+        <mkdir dir="${test.dir}/classes"/>
+        <javac destdir="${test.dir}/classes" target="1.4" debug="true"
+            deprecation="false" optimize="false" failonerror="true">
+            <src path="${test.src}"/>
+            <classpath>
+                <path refid="classpath"/>
+                <path location="${build.dir}/classes"/>
+            </classpath>
+        </javac>
+        <!-- Copy hibernate mapping files to ${build.dir}/classes -->
+        <copy todir="${build.dir}/classes">
+            <fileset dir="${src.dir}" includes="**/*.hbm.xml"/>
+        </copy>
+    </target>
+
+    <target name="test" depends="compile" description="Runs JUnit tests">
+        <!-- Check that junit.jar is in $ANT_HOME/lib -->
+        <available classname="junit.framework.TestCase" property="junit.present"/>
+        <fail unless="junit.present" 
+            message="Please copy web/WEB-INF/lib/junit.jar into ${env.ANT_HOME}/lib"/>
+            
+        <mkdir dir="${test.dir}/data"/>
+        <junit printsummary="no" fork="true"
+            errorProperty="test.failed" failureProperty="test.failed">
+            <classpath>
+                <path refid="classpath"/>
+                <path location="${build.dir}/classes"/>
+                <path location="${test.dir}/classes"/>
+                <path location="web/WEB-INF/classes"/>
+                <path location="web"/>
+            </classpath>
+            <formatter type="xml"/>
+            <formatter type="brief" usefile="false"/>
+            <batchtest todir="${test.dir}/data" if="testcase">
+                <fileset dir="${test.dir}/classes">
+                    <include name="**/*${testcase}*"/>
+                    <exclude name="**/*TestCase.class"/>
+                </fileset>
+            </batchtest>
+            <batchtest todir="${test.dir}/data" unless="testcase">
+                <fileset dir="${test.dir}/classes">
+                    <include name="**/*Test.class*"/>
+                </fileset>
+            </batchtest>
+        </junit>
+
+        <fail if="test.failed">
+          Unit tests failed. For error messages, check the log files in
+          ${test.dir}/data or run "ant test-reports"
+          to generate reports at ${test.dir}/reports.</fail>
+    </target>
+
+    <target name="test-reports" description="Generate test reports">
+        <mkdir dir="${test.dir}/reports"/>
+        <junitreport todir="${test.dir}">
+            <fileset dir="${test.dir}/data">
+                <include name="TEST-*.xml"/>
+            </fileset>
+            <report format="frames" todir="${test.dir}/reports"/>
+        </junitreport>
+    </target>
+
+    <target name="war" depends="compile" description="Packages app as WAR">
+        <mkdir dir="${dist.dir}"/>
+        <war destfile="${dist.dir}/${webapp.name}.war"
+            webxml="${web.dir}/WEB-INF/web.xml">
+            <classes dir="${build.dir}/classes"/>
+            <fileset dir="${web.dir}">
+                <include name="**/*.*"/>
+                <exclude name="**/web.xml"/>
+                <exclude name="**/junit.jar"/>
+                <exclude name="**/*mock.jar"/>
+                <exclude name="**/strutstestcase*.jar"/>
+            </fileset>
+        </war>
+    </target>
+
+    <target name="deploy" depends="compile" description="Deploy application">
+        <copy todir="${tomcat.home}/webapps/${webapp.name}" preservelastmodified="true">
+            <fileset dir="${web.dir}">
+                <include name="**/*.*"/>
+                <exclude name="**/junit.jar"/>
+                <exclude name="**/*mock.jar"/>
+                <exclude name="**/strutstestcase*.jar"/>
+            </fileset>
+        </copy>
+        <copy todir="${tomcat.home}/webapps/${webapp.name}/WEB-INF/classes"
+            preservelastmodified="true">
+            <fileset dir="${build.dir}/classes"/>
+        </copy>
+    </target>
+
+    <target name="deploywar" depends="war" description="Deploy application as a WAR file">
+        <copy todir="${tomcat.home}/webapps" preservelastmodified="true">
+            <fileset dir=".">
+                <include name="${dist.dir}/*.war"/>
+            </fileset>
+        </copy>
+    </target>
+
+    <target name="clean" description="Clean output directories">
+        <delete dir="build"/>
+        <delete dir="${dist.dir}"/>
+    </target>
+
+    <!-- Tomcat Ant Tasks -->
+    <taskdef file="tomcatTasks.properties">
+        <classpath>
+            <pathelement path="${tomcat.home}/server/lib/catalina-ant.jar"/>
+        </classpath>
+    </taskdef>
+
+    <target name="install" description="Install application in Tomcat"
+        depends="war">
+        <deploy url="${tomcat.manager.url}"
+            username="${tomcat.manager.username}"
+            password="${tomcat.manager.password}"
+            path="/${webapp.name}"
+            war="file:${dist.dir}/${webapp.name}.war"/>
+    </target>
+
+    <target name="remove" description="Remove application from Tomcat">
+        <undeploy url="${tomcat.manager.url}"
+            username="${tomcat.manager.username}"
+            password="${tomcat.manager.password}"
+            path="/${webapp.name}"/>
+    </target>
+
+    <target name="reload" description="Reload application in Tomcat">
+        <reload url="${tomcat.manager.url}"
+            username="${tomcat.manager.username}"
+            password="${tomcat.manager.password}"
+            path="/${webapp.name}"/>
+    </target>
+
+    <target name="start" description="Start Tomcat application">
+        <start url="${tomcat.manager.url}"
+            username="${tomcat.manager.username}"
+            password="${tomcat.manager.password}"
+            path="/${webapp.name}"/>
+    </target>
+
+    <target name="stop" description="Stop Tomcat application">
+        <stop url="${tomcat.manager.url}"
+            username="${tomcat.manager.username}"
+            password="${tomcat.manager.password}"
+            path="/${webapp.name}"/>
+    </target>
+
+    <target name="list" description="List Tomcat applications">
+        <list url="${tomcat.manager.url}"
+            username="${tomcat.manager.username}"
+            password="${tomcat.manager.password}"/>
+    </target>
+
+    <!-- Creates release (source) distribution -->
+    <target name="dist" depends="clean"
+        description="create zip and tar.gz of ${webapp.name} for distribution">
+        <property name="archive.name"
+            value="${webapp.name}-${webapp.version}"/>
+        <mkdir dir="${dist.dir}"/>
+        <property name="archive.target" value="${dist.dir}/${archive.name}"/>
+        <zip zipfile="${archive.target}.zip">
+            <zipfileset prefix="${webapp.name}" dir="${basedir}">
+                <patternset id="srcfiles">
+                    <exclude name="*.log"/>
+                    <exclude name="junit*.properties"/>
+                    <exclude name="**/*~"/>
+                    <exclude name="**/*.bak"/>
+                    <exclude name="*/**.java.txt"/>
+                    <exclude name="${build.dir}/**"/>
+                    <exclude name="${dist.dir}/**"/>
+                    <exclude name="db/**"/>
+                    <exclude name="sandbox/**"/>
+                    <exclude name=".#**"/>
+                    <include name="**"/>
+                </patternset>
+            </zipfileset>
+        </zip>
+        <tar tarfile="${archive.target}.tar">
+            <tarfileset dir="${basedir}" mode="644"
+                prefix="${webapp.name}"
+                username="ant" group="ant">
+                <patternset refid="srcfiles"/>
+            </tarfileset>
+        </tar>
+        <gzip zipfile="${archive.target}.tar.gz" src="${archive.target}.tar"/>
+        <delete file="${archive.target}.tar"/>
+    </target>
+
+    <!-- browse the database -->
+    <target name="browse"
+        description="Graphical Database Editing Tool (hsqldb-gui)">
+        <echo level="info">Opening HSQL GUI...</echo>
+        <java classname="org.hsqldb.util.DatabaseManager" fork="yes"
+            failonerror="true">
+            <classpath refid="classpath"/>
+            <arg value="-url"/>
+            <arg value="jdbc:hsqldb:db/appfuse"/>
+        </java>
+    </target>
+
+    <!-- Create a new project using this one as a template -->
+    <target name="new" depends="clean"
+        description="creates a new project with the specified name">
+        <fail unless="app.name">Please specify an app.name using -Dapp.name=NAME</fail>
+        <echo level="info">Creating new application named '${app.name}'...</echo>
+        <copy todir="../${app.name}">
+            <fileset dir="${basedir}">
+                <exclude name="${dist.dir}/**"/>
+                <exclude name="db/**"/>
+                <exclude name="sandbox/**"/>
+                <exclude name="${webapp.name}*"/>
+                <exclude name="*.log"/>
+                <exclude name=".#**"/>
+                <include name="**"/>
+            </fileset>
+        </copy>
+
+        <!-- Replace current app.name with new app.name -->
+        <replaceregexp flags="g">
+            <regexp pattern="equinox"/>
+            <substitution expression="${app.name}"/>
+            <fileset dir="../${app.name}" includes="build.xml"/>
+        </replaceregexp>
+
+        <!-- Copy IDEA project files -->
+        <copy file="${webapp.name}.iml" tofile="../${app.name}/${app.name}.iml"/>
+        <copy file="${webapp.name}.ipr" tofile="../${app.name}/${app.name}.ipr"/>
+        <replace dir="../${app.name}" value="${app.name}" token="${webapp.name}">
+          <include name="${app.name}.i*"/>
+        </replace>
+    </target>
+</project>
