@@ -4,7 +4,7 @@ import org.apache.commons.logging.LogFactory;
 import at.newsagg.model.User;
 
 
-public class UserDAOTest extends BaseDAOTestCase { 
+public class UserDAOTest extends Base { 
 	private User user = null; 
 	private UserDAO dao = null; 
 	
