@@ -345,8 +345,8 @@
 	             force="false"
 	             verbose="false">
 	      <fileset dir="${src.dir}">
-	        <include name="at/newsagg/model/parser/hibernate/*.java"/> 
-	      	
+	        <include name="at/newsagg/model/*.java"/> 
+	      	<include name="at/newsagg/model/parser/hibernate/*.java"/>
 	        <exclude name="at/newsagg/model/parser/hibernate/ChannelBuilder.java"/>
 	      </fileset>
 	      <hibernate version="2.0"/>
