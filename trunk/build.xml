@@ -7,8 +7,12 @@
     <property name="test.src" value="test"/>
     <property name="dist.dir" value="dist"/>
     <property name="build.dir" value="build"/>
+	<property name="build.classes" value="build/classes"/>
     <property name="test.dir" value="build/test"/>
-    <property name="webapp.name" value="equinox"/>
+    <property name="webapp.name" value="springbreak"/>
+	<property name="build.gen-xdoclet" value="build/xdoclet/"/>
+	<property name="hibernate.schema.file" value="build/xdoclet/dbschema/schema.txt"/>
+	
 
     <property environment="env"/>
     <property name="tomcat.home" value="${tomcat.catalinahome}"/>
@@ -290,4 +294,172 @@
           <include name="${app.name}.i*"/>
         </replace>
     </target>
+	
+	
+	<!-- ============================================================ 
+	 Hibernate xdoclet stuff
+	 Roland Vecera
+	 20.3.2005
+	  =============================================================== -->
+	
+
+	
+	
+	<!-- Pattern for generated hibernate mapping files -->
+	  <fileset id="hibernate.mapping.files" dir="${build.gen-xdoclet}">
+	    <include name="**/*.hbm.xml" />
+	  </fileset>
+	<property name="hibernate.prop.file"
+	            location="sql/hibernate.properties"/>
+	
+	  <!-- ========================================================== -->
+	  <!-- Invoke XDoclet's hibernate                                 -->
+	  <!-- ========================================================== -->
+
+	  <target name="hibernate.mapping" 
+	          description="Generates hibernate mapping configuration documents.">
+
+	    <mkdir dir="${build.gen-xdoclet}"/>
+
+	    <path id="xdoclet.classpath">
+	      <fileset dir="libs/xdoclet">
+	        <include name="xjavadoc.jar"/>
+	        <include name="xdoclet.jar"/>
+	        <include name="xdoclet-hibernate-module.jar"/>
+	        <include name="xdoclet-xdoclet-module.jar"/>
+	        <include name="commons-collections.jar"/>
+	        <include name="commons-logging.jar"/>
+	      </fileset>
+	    </path>
+
+	    <taskdef name="hibernatedoclet"
+	             classname="xdoclet.modules.hibernate.HibernateDocletTask"
+	             classpathref="xdoclet.classpath"/>
+
+	    <echo>Running Hibernate-Doclet</echo>
+
+	    <hibernatedoclet destdir="${build.gen-xdoclet}"
+	             mergedir="${src.dir}"
+	             excludedtags="@version,@author,@todo,@see"
+	             addedtags="@xdoclet-generated at ${TODAY},@version ${version}"
+	             force="false"
+	             verbose="false">
+	      <fileset dir="${src.dir}">
+	        <include name="at/newsagg/model/parser/hibernate/*.java"/> 
+	      	
+	        <exclude name="at/newsagg/model/parser/hibernate/ChannelBuilder.java"/>
+	      </fileset>
+	      <hibernate version="2.0"/>
+	    </hibernatedoclet>
+	    <!-- copy hibernate mapping files also to build.gen-xdoclet -->
+	    <copy todir="${build.gen-xdoclet}" overwrite="true">
+	      <fileset refid="hibernate.mapping.files"/>
+	    </copy>
+	    
+	  </target>
+
+
+	  <!-- ========================================================== -->
+	  <!-- Generate DDL from hibernate mapping files                  -->
+	  <!-- ========================================================== -->
+
+	  <target name="hibernate.dbscheme" depends="hibernate.mapping"
+	          description="Creates Data Definition Language for hibernate backend.">
+	    <mkdir dir="${build.gen-xdoclet}/dbschema"/>
+	  	
+	  	
+	  	<!-- Libraries needed when hibernate is involved -->
+	  	  <path id="hibernate.classpath">
+	  	    <pathelement location="libs/hibernate/hibernate2.jar"/>
+	  	    <pathelement location="libs/hibernate/commons-lang.jar"/>
+	  	    <pathelement location="libs/hibernate/commons-logging.jar"/>
+	  	    <pathelement location="libs/hibernate/commons-collections.jar"/>
+	  	    <pathelement location="libs/hibernate/commons-beanutils.jar"/>
+	  	    <pathelement location="libs/hibernate/cglib2.jar"/>
+	  	    <pathelement location="libs/hibernate/dom4j.jar"/>
+	  	    <pathelement location="libs/hibernate/odmg.jar"/>
+	  	    <pathelement location="libs/hibernate/ehcache.jar"/>
+	  	    <pathelement location="libs/hibernate/jdbc2_0-stdtext.jar"/>
+	  	    <pathelement location="libs/hibernate/jta.jar"/>
+	  	    <pathelement location="libs/hibernate/xalan.jar"/>
+	  	    <pathelement location="libs/hibernate/xerces.jar"/>
+	  	    <pathelement location="libs/hibernate/xml-apis.jar"/>
+	  	    <pathelement location="libs/spring-framework-1.1.5/dist/spring.jar"/>
+	  	  </path>
+	  	
+	  	
+	  	
+	    <!-- define schema export task -->
+	    <taskdef name="schemaexport"
+	             classname="net.sf.hibernate.tool.hbm2ddl.SchemaExportTask">
+	      <classpath>
+	        <pathelement location="${build.classes}"/>
+	      	<pathelement location="${build}/xdoclet"/>
+	        <path refid="hibernate.classpath"/>
+	      </classpath>
+	    </taskdef>
+
+	    <!-- create schema -->
+	    <schemaexport properties="sql/schema/postgres/postgres-dialect.properties"
+	                  quiet="yes"
+	                  drop="no"
+	                  text="yes"
+	                  delimiter=";"
+	                  output="${hibernate.schema.file}">
+	      <fileset refid="hibernate.mapping.files"/>
+	    </schemaexport>
+
+	    <echo message="Schema written to ${hibernate.schema.file},"/>
+	    <echo message="make sure you initialise your database with this DDL file"/>
+	    <echo message="or run target 'hibernate.initdb'."/>
+	  </target>
+
+	
+	<!-- this Target calls hibernate.dbscheme (see above) and
+		generatres DB-scheme for the dialects hsqldb, mysql and postgres
+		
+		So always use this target to generate dbscheme
+		Roland Vecera
+		20.3.2005
+		-->
+	
+	  <target name="hibernate.dbscheme.generate"
+	          description="Generate for DDL the most commonly used dialects.">
+	    <!-- Backup original hibernate settings 
+	    <move file="sql/hibernate.properties" 
+	          tofile="sql/hibernate.properties.bak"/> -->
+	    
+	    <!-- Hypersonic SQL: Replace hibernate settings with dialect specific -->
+	    <copy file="sql/schema/hsqldb/hsqldb-dialect.properties" 
+	          tofile="${build.classes}/hibernate.properties" overwrite="true"/>
+	    <antcall target="hibernate.dbscheme">
+	      <param name="hibernate.schema.file" value="build/xdoclet/dbschema/hsqldb-hibernate.ddl"/>
+	    </antcall>
+	    
+	    <!-- MySQL: Replace hibernate settings with dialect specific -->
+	    <copy file="sql/schema/mysql/mysql-dialect.properties" 
+	          tofile="${build.classes}/hibernate.properties" overwrite="true"/>
+	    <antcall target="hibernate.dbscheme">
+	      <param name="hibernate.schema.file" value="build/xdoclet/dbschema/mysql-hibernate.ddl"/>
+	    </antcall>
+	    
+	    <!-- PostgreSQL: Replace hibernate settings with dialect specific -->
+	    <copy file="sql/schema/postgres/postgres-dialect.properties" 
+	          tofile="${build.classes}/hibernate.properties" overwrite="true"/>
+	    <antcall target="hibernate.dbscheme">
+	      <param name="hibernate.schema.file" value="build/xdoclet/dbschema/postgres-hibernate.ddl"/>
+	    </antcall>
+	    
+	    <!-- Restore original hibernate settings -->
+	    <!--<move file="${build.classes}/hibernate.properties.bak"
+	          tofile="${build.classes}/hibernate.properties" /> -->
+	  </target>
+	  
+	  
+	
+	
+	
+	
+	
+	
 </project>
