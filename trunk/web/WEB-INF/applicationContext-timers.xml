@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN//EN"
+    "http://www.springframework.org/dtd/spring-beans.dtd">
+
+<!-- this file was extracted from applicationContext.xml to speedup unittests
+     
+     however this file is needed for full functionality of the application
+-->
+     
+<beans>
+
+<!-- Task Timer for parserCronJobService -->
+	<bean id="scheduledParserCronJob"
+		class="org.springframework.scheduling.timer.ScheduledTimerTask">
+		<property name="timerTask">
+			<ref bean="parserCronJobService"/>
+		</property>
+		<property name="period">
+			<!-- time in ms -->
+			<value>300000</value>
+		</property>
+	</bean>
+
+
+<!-- Master of all Timer Tasks; takes an array of Tasks to handle
+ Add your Timertask here!
+ Roland Vecera
+-->
+	<bean class="org.springframework.scheduling.timer.TimerFactoryBean">
+		<property name="scheduledTimerTasks">
+			<list>
+				<ref bean="scheduledParserCronJob"/>
+			</list>
+		</property>
+	</bean>
+	
+	</beans>
